@@ -2,7 +2,7 @@ const { randomBytes } = require("crypto");
 
 module.exports = {
     namespace: process.env.NAMESPACE,
-    nodeID: `${process.env.NODE_ID}-${randomBytes(6).toString("base64url")}`,
+    nodeID: process.env.HA_ENABLED === "true" ? `${process.env.NODE_ID}-${randomBytes(6).toString("base64url")}` : process.env.NODE_ID,
 
     logger: [
         {

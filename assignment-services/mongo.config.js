@@ -2,14 +2,10 @@ const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MONGODB_URI);
 
-const mongodbConnection = mongoose.connection;
+const dbConnection = mongoose.connection;
 
-mongodbConnection.on("error", () =>
-    console.error.bind(console, "connection error")
-);
+dbConnection.on("error", () => console.error.bind(console, "DB Connection Error!"));
 
-mongodbConnection.once("open", () =>
-    console.info("DB is connected.")
-);
+dbConnection.once("open", () => console.info("DB is connected."));
 
-module.exports = mongodbConnection;
+module.exports = dbConnection;
