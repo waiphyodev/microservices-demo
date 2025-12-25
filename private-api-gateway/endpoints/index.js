@@ -1,4 +1,5 @@
 const express = require("express");
+const { authenticate } = require("../middlewares/auth.middleware");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -35,6 +36,10 @@ router.get("/api/events", async (req, res) => {
 
     return res.status(200).json({ code: 200, data: list });
 });
+
+router.use("/api/auth", require("./auth.endpoint"));
+
+router.use(authenticate);
 
 router.use("/api/users", require("./user.endpoint"));
 router.use("/api/assignments", require("./assignment.endpoint"));

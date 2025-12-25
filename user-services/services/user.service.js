@@ -12,13 +12,15 @@ const services = {
                 logger.info("[ACTION] user.list is called.");
 
                 try {
-                    const rows = await dbConnection.query("SELECT * FROM users");
+                    const [rows] = await dbConnection.query(
+                        "SELECT id, email FROM users"
+                    );
 
-                    console.log("rows", rows);
-
-                    return { count: 0, list: [] };
+                    return { count: rows.length, list: rows };
                 } catch (error) {
-                    throw new MoleculerServerError(error.message, 500, "INTERNAL_SERVER_ERROR");
+                    logger.error("[ERROR] user.list => ", JSON.stringify(error, null, 2));
+
+                    throw new MoleculerServerError(error.message, error.code, error.type);
                 }
             },
         },

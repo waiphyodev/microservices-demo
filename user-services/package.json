@@ -10,7 +10,9 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "bcryptjs": "^3.0.3",
         "dotenv": "^17.2.3",
+        "jsonwebtoken": "^9.0.3",
         "moleculer": "^0.14.35",
         "mysql2": "^3.16.0",
         "nats": "^2.29.3"
