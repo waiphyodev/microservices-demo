@@ -9,9 +9,6 @@ const authenticate = async (req, res, next) => {
 
     const [scheme, token] = authHeader.split(" ");
     if (scheme !== "Bearer" || !token) return res.status(401).json({ code: 401, message: "Unauthenticated!" });
-    console.log("authHeader", authHeader)
-    console.log("scheme", scheme)
-    console.log("token", token)
 
     try {
         const user = await req.app.locals.broker.call("auth.verify", { token });

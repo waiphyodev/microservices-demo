@@ -42,6 +42,7 @@ router.use("/api/auth", require("./auth.endpoint"));
 router.use(authenticate);
 
 router.use("/api/users", require("./user.endpoint"));
+router.use("/api/assignees", require("./assignee.endpoint"));
 router.use("/api/assignments", require("./assignment.endpoint"));
 
 module.exports = router;
