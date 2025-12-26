@@ -2,9 +2,17 @@ const { Schema, model } = require("mongoose");
 
 const assigneeSchema = new Schema(
     {
+        userId: {
+            type: String,
+            required: [true, "User ID is required."]
+        },
         name: {
             type: String,
             required: [true, "Name is required."],
+        },
+        email: {
+            type: String,
+            required: [true, "Email is required."]
         },
     },
     {

@@ -1,6 +1,6 @@
 const broker = require("../broker");
 const models = require("../models");
-const { MoleculerServerError } = require("moleculer").Errors;
+const { MoleculerClientError, MoleculerServerError } = require("moleculer").Errors;
 
 const logger = broker.logger;
 
@@ -8,8 +8,36 @@ const services = {
     name: "assignment",
     actions: {
         create: {
+            params: {
+                assigneeId: {
+                    type: "string",
+                    empty: false,
+                },
+                description: {
+                    type: "string",
+                    empty: false,
+                },
+            },
             async handler(ctx) {
-                //
+                logger.info("[ACTION] assignment.create is called.");
+
+                const { assigneeId, description } = ctx.params;
+
+                try {
+                    const data = await models.Assignment.findOne({ assigneeId, description });
+                    if (data) throw new MoleculerClientError("Duplicated!", 409, "CONFLICT");
+
+                    await models.Assignment.create({
+                        assigneeId,
+                        description,
+                    });
+
+                    return;
+                } catch (error) {
+                    logger.error("[ERROR] assignment.create => ", JSON.stringify(error, null, 2));
+
+                    throw new MoleculerServerError(error.message, error.code, error.type);
+                }
             },
         },
         list: {
@@ -52,23 +80,88 @@ const services = {
                 } catch (error) {
                     logger.error("[ERROR] assignment.list => ", JSON.stringify(error, null, 2));
 
-                    throw new MoleculerServerError(error.message, 500, "INTERNAL_SERVER_ERROR");
+                    throw new MoleculerServerError(error.message, error.code, error.type);
                 }
             },
         },
         detail: {
+            params: {
+                id: {
+                    type: "string",
+                    empty: false,
+                },
+            },
             async handler(ctx) {
-                //
+                logger.info("[ACTION] assignment.detail is called.");
+
+                const { id } = ctx.params;
+
+                try {
+                    const data = await models.Assignment.findById(id);
+                    if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
+
+                    return data;
+                } catch (error) {
+                    logger.error("[ERROR] assignment.detail => ", JSON.stringify(error, null, 2));
+
+                    throw new MoleculerServerError(error.message, error.code, error.type);
+                }
             },
         },
         update: {
+            params: {
+                id: {
+                    type: "string",
+                    empty: false,
+                },
+                assigneeId: {
+                    type: "string",
+                    empty: false,
+                },
+                description: {
+                    type: "string",
+                    empty: false,
+                },
+            },
             async handler(ctx) {
-                //
+                logger.info("[ACTION] assignment.update is called.");
+
+                const { id, assigneeId, description } = ctx.params;
+
+                try {
+                    const data = await models.Assignment.findByIdAndUpdate(id, { assigneeId, description });
+                    if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
+
+                    return;
+                } catch (error) {
+                    logger.error("[ERROR] assignment.update => ", JSON.stringify(error, null, 2));
+
+                    throw new MoleculerServerError(error.message, error.code, error.type);
+                }
             },
         },
         delete: {
+            params: {
+                id: {
+                    type: "string",
+                    empty: false,
+                },
+            },
             async handler(ctx) {
-                //
+                logger.info("[ACTION] assignment.delete is called.");
+
+                const { id } = ctx.params;
+
+                try {
+                    const data = await models.Assignment.findByIdAndDelete(id);
+                    if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
+
+                    return;
+                } catch (error) {
+                    logger.error("[ERROR] assignment.delete => ", JSON.stringify(error, null, 2));
+
+                    throw new MoleculerServerError(error.message, error.code, error.type);
+                }
             },
         },
     },
