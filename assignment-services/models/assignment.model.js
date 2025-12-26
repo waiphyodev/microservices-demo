@@ -6,9 +6,7 @@ const assignmentSchema = new Schema(
             type: Schema.Types.ObjectId,
             required: [true, "Assignee is required."],
             ref: "Assignee"
-        }
-    },
-    {
+        },
         description: {
             type: String,
             required: [true, "Description is required."],

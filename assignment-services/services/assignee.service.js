@@ -6,11 +6,36 @@ const logger = broker.logger;
 
 const services = {
     name: "assignee",
+    events: {
+        "user.created": {
+            params: {
+                userId: {
+                    type: "number",
+                    empty: false,
+                },
+                name: {
+                    type: "string",
+                    empty: false,
+                },
+                email: {
+                    type: "email",
+                    empty: false,
+                },
+            },
+            async handler(ctx) {
+                logger.info("[EVENT] user.created is triggered.");
+
+                const { userId, name, email } = ctx.params;
+
+                await ctx.call("assignee.create", {userId, name, email});
+            },
+        },
+    },
     actions: {
         create: {
             params: {
                 userId: {
-                    type: "string",
+                    type: "number",
                     empty: false,
                 },
                 name: {
@@ -28,7 +53,7 @@ const services = {
                 const { userId, name, email } = ctx.params;
 
                 try {
-                    const data = await models.Assignee.findOne({ userId, name });
+                    const data = await models.Assignee.findOne({ userId, email });
                     if (data) throw new MoleculerClientError("Duplicated!", 409, "CONFLICT");
 
                     await models.Assignee.create({
@@ -61,7 +86,7 @@ const services = {
         detailByUserId: {
             params: {
                 userId: {
-                    type: "string",
+                    type: "number",
                     empty: false,
                 },
             },
@@ -85,7 +110,7 @@ const services = {
         updateByUserId: {
             params: {
                 userId: {
-                    type: "string",
+                    type: "number",
                     empty: false,
                 },
                 name: {
@@ -115,7 +140,7 @@ const services = {
         deleteByUserId: {
             params: {
                 userId: {
-                    type: "string",
+                    type: "number",
                     empty: false,
                 },
             },

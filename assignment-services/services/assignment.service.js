@@ -1,3 +1,4 @@
+const { Types } = require("mongoose");
 const broker = require("../broker");
 const models = require("../models");
 const { MoleculerClientError, MoleculerServerError } = require("moleculer").Errors;
@@ -24,9 +25,6 @@ const services = {
                 const { assigneeId, description } = ctx.params;
 
                 try {
-                    const data = await models.Assignment.findOne({ assigneeId, description });
-                    if (data) throw new MoleculerClientError("Duplicated!", 409, "CONFLICT");
-
                     await models.Assignment.create({
                         assigneeId,
                         description,
@@ -97,7 +95,28 @@ const services = {
                 const { id } = ctx.params;
 
                 try {
-                    const data = await models.Assignment.findById(id);
+                    const data = await models.Assignment.aggregate([
+                        {
+                            $match: {
+                                _id: new Types.ObjectId(id),
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: "assignees",
+                                localField: "assigneeId",
+                                foreignField: "_id",
+                                as: "assignee",
+                            },
+                        },
+                        {
+                            $addFields: {
+                                assignee: {
+                                    $arrayElemAt: ["$assignee", 0],
+                                },
+                            },
+                        },
+                    ]);
                     if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
 
                     return data;

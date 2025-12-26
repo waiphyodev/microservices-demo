@@ -3,7 +3,7 @@ const { Schema, model } = require("mongoose");
 const assigneeSchema = new Schema(
     {
         userId: {
-            type: String,
+            type: Number,
             required: [true, "User ID is required."]
         },
         name: {

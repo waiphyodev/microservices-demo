@@ -10,6 +10,10 @@ const services = {
     actions: {
         create: {
             params: {
+                name: {
+                    type: "string",
+                    empty: false,
+                },
                 email: {
                     type: "email",
                     empty: false,
@@ -24,7 +28,7 @@ const services = {
             async handler(ctx) {
                 logger.info("[ACTION] user.create is called.");
 
-                const { email, password } = ctx.params;
+                const { name, email, password } = ctx.params;
 
                 try {
                     const [rows] = await dbConnection.query("SELECT * FROM users where email = ?", [email]);
@@ -32,7 +36,13 @@ const services = {
 
                     const hash = await bcrypt.hash(password, 10);
 
-                    await dbConnection.query("INSERT INTO users (email, password) VALUES (?, ?)", [email, hash]);
+                    const [data] = await dbConnection.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hash]);
+
+                    ctx.emit("user.created", {
+                        userId: data.insertId,
+                        name,
+                        email,
+                    });
 
                     return;
                 } catch (error) {
@@ -87,6 +97,10 @@ const services = {
                     type: "string",
                     empty: false,
                 },
+                name: {
+                    type: "string",
+                    empty: false,
+                },
                 email: {
                     type: "email",
                     empty: false,
@@ -95,13 +109,13 @@ const services = {
             async handler(ctx) {
                 logger.info("[ACTION] user.update is called.");
 
-                const { id, email } = ctx.params;
+                const { id, name, email } = ctx.params;
 
                 try {
                     const [rows] = await dbConnection.query("SELECT id, email FROM users WHERE id = ?", [id]);
                     if (rows.length < 1) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
 
-                    await dbConnection.query("UPDATE users SET email = ? WHERE id = ?", [email, id]);
+                    await dbConnection.query("UPDATE users SET name = ?, email = ? WHERE id = ?", [name, email, id]);
 
                     return;
                 } catch (error) {

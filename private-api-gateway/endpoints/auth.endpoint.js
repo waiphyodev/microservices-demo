@@ -5,9 +5,8 @@ const router = express.Router();
 const logger = broker.logger;
 
 router.post("/register", async (req, res) => {
-    const { email, password } = req.body;
     try {
-        await req.app.locals.broker.call("auth.register", { email, password });
+        await req.app.locals.broker.call("auth.register", req.body);
 
         return res.status(201).json({ code: 201, message: "Registered." });
     } catch (error) {

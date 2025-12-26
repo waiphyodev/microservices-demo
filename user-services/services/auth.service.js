@@ -13,7 +13,7 @@ const services = {
             async handler(ctx) {
                 logger.info("[ACTION] auth.register is called.");
 
-                const { email, password } = ctx.params;
+                const { name, email, password } = ctx.params;
 
                 try {
                     const [rows] = await dbConnection.query("SELECT * FROM users where email = ?", [email]);
@@ -21,7 +21,13 @@ const services = {
 
                     const hash = await bcrypt.hash(password, 10);
 
-                    await dbConnection.query("INSERT INTO users (email, password) VALUES (?, ?)", [email, hash]);
+                    const [data] = await dbConnection.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hash]);
+
+                    ctx.emit("user.created", {
+                        userId: data.insertId,
+                        name,
+                        email,
+                    })
 
                     return;
                 } catch (error) {
