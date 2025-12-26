@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+:root {
+    --background: #fafafa;
+
+    --primary: #293371;
+    --highlight: #ff6400;
+
+    --success: #147350;
+    --warning: #ff7f3e;
+    --info: #1c42a8;
+    --error: #dc2626;
+    --muted: #e5e7eb;
+    --default: #1e1e1e;
+}
+
+@theme {
+    --color-background: var(--background);
+
+    --color-primary: var(--primary);
+    --color-highlight: var(--highlight);
+
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-info: var(--info);
+    --color-error: var(--error);
+    --color-muted: var(--muted);
+    --color-default: var(--default);
+}
+
+@font-face {
+    font-family: "google-sans";
+    src: url("./assets/fonts/GoogleSans-VariableFont_GRAD,opsz,wght.ttf") format("truetype");
+}
+
+body {
+    font-family: "google-sans";
+    scroll-behavior: initial;
+    @apply bg-background text-base;
+}
+
+/* loading */
+.page-loading {
+    color: var(--color-primary);
+}
+
+.page-loading,
+.page-loading div {
+    box-sizing: border-box;
+}
+
+.page-loading {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.page-loading div {
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    width: 16px;
+    background: currentColor;
+    animation: page-loading 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+
+.page-loading div:nth-child(1) {
+    left: 8px;
+    animation-delay: -0.24s;
+}
+
+.page-loading div:nth-child(2) {
+    left: 32px;
+    animation-delay: -0.12s;
+}
+
+.page-loading div:nth-child(3) {
+    left: 56px;
+    animation-delay: 0s;
+}
+
+@keyframes page-loading {
+    0% {
+        top: 8px;
+        height: 64px;
+    }
+    50%,
+    100% {
+        top: 24px;
+        height: 32px;
+    }
+}
+
+.bg-glass {
+    @apply border border-white/10 bg-black/10 backdrop-blur-sm shadow;
+}
+
+.btn {
+    @apply px-4 h-[36px] 2xl:h-[48px] md:min-w-24 2xl:min-w-32 flex items-center justify-center gap-1 2xl:gap-2 text-sm 2xl:text-base transition-all cursor-pointer hover:opacity-90 active:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-filled-error {
+    @apply border border-error bg-error text-white;
+}
+
+.btn-secondary {
+    @apply border;
+}
+
+.btn-filled-primary {
+    @apply border border-primary bg-primary text-white;
+}
+
+.btn-icon {
+    @apply size-8 2xl:size-10 border border-gray-200 transition-all inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed;
+}
+
+.btn-outline-primary {
+    @apply border border-primary bg-inherit text-primary;
+}
+
+.tooltip {
+    @apply relative before:py-1 before:px-2 before:text-sm hover:before:bg-gray-200 before:text-nowrap before:absolute transition-all;
+}
+
+.tooltip-up {
+    @apply before:-top-8 before:left-1/2 before:-translate-x-1/2;
+}
+
+.tooltip-down {
+    @apply before:-bottom-8 before:left-1/2 before:-translate-x-1/2;
+}
+
+.btn-radio {
+    @apply py-1 px-3 rounded-full border flex items-center gap-2 cursor-pointer;
+}
+
+.btn-radio-indicator {
+    @apply w-2 h-2 2xl:w-4 2xl:h-4 rounded-full border 2xl:border-2;
+}
+
+.btn-radio-indicator-active {
+    @apply w-[5px] h-[5px] 2xl:w-2 2xl:h-2 rounded-full bg-primary;
+}
+
+.customized-box-shadow {
+    @apply shadow-[0_1px_4px_rgba(72,121,227,0.25)];
+}
+
+.customized-input {
+    @apply py-1 2xl:py-2 px-2 2xl:px-4 h-[36px] 2xl:h-[48px] w-full border outline-none placeholder:text-gray-300 focus:border-primary focus:border-1 bg-inherit disabled:cursor-not-allowed disabled:text-gray-400;
+}
+
+.customized-rounded {
+    @apply rounded-[5px];
+}
+
+.form-spacing {
+    @apply space-y-8 2xl:space-y-10;
+}
+
+.icon-content {
+    @apply size-4 2xl:size-5 shrink-0;
+}
+
+.icon-header {
+    @apply size-8 2xl:size-9 shrink-0;
+}
+
+.icon-subContent {
+    @apply size-2 2xl:size-3 shrink-0;
+}
+
+.icon-subHeader {
+    @apply size-6 2xl:size-7 shrink-0;
+}
+
+.page-container {
+    @apply p-4 2xl:p-6;
+}
+
+.text-subHeader {
+    @apply text-base 2xl:text-xl;
+}
+
+.text-content {
+    @apply text-xs 2xl:text-base;
+}
+
+.text-smallHeader {
+    @apply text-sm 2xl:text-lg;
+}
+
+.text-subContent {
+    @apply text-[10px] leading-[12px] 2xl:text-sm;
+}
+
+.text-smallContent {
+    @apply text-[8px] leading-[10px] 2xl:text-xs;
+}
