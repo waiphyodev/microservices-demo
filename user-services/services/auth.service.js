@@ -73,7 +73,6 @@ const services = {
             async handler(ctx) {
                 logger.info("[ACTION] auth.verify is called.");
                 const { token } = ctx.params;
-                console.log("token", token)
 
                 try {
                     const decoded = jwt.verify(token, process.env.AT_SECRET);
