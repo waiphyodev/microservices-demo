@@ -27,7 +27,7 @@ const services = {
 
                 const { userId, name, email } = ctx.params;
 
-                await ctx.call("assignee.create", {userId, name, email});
+                await ctx.call("assignee.create", { userId, name, email });
             },
         },
     },
@@ -75,9 +75,31 @@ const services = {
                 logger.info("[ACTION] assignee.list is called.");
 
                 try {
-                    const list = await models.Assignee.find();
+                    const data = await models.Assignee.aggregate([
+                        {
+                            $facet: {
+                                count: [{ $count: "total" }],
+                                list: [
+                                    {
+                                        $lookup: {
+                                            from: "assignments",
+                                            localField: "_id",
+                                            foreignField: "assigneeId",
+                                            as: "assignmentList",
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            $project: {
+                                count: { $arrayElemAt: ["$count.total", 0] },
+                                list: 1,
+                            },
+                        },
+                    ]);
 
-                    return { cound: list.length, list };
+                    return { count: data[0]?.count || 0, list: data[0]?.list || [] };
                 } catch (error) {
                     logger.error("[ERROR] assignee.list => ", JSON.stringify(error, null, 2));
                 }
@@ -86,7 +108,7 @@ const services = {
         detailByUserId: {
             params: {
                 userId: {
-                    type: "number",
+                    type: "string",
                     empty: false,
                 },
             },
@@ -96,66 +118,26 @@ const services = {
                 const { userId } = ctx.params;
 
                 try {
-                    const data = await models.Assignee.findOne({ userId });
+                    const data = await models.Assignee.aggregate([
+                        {
+                            $match: {
+                                userId: Number(userId)
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "assignments",
+                                localField: "_id",
+                                foreignField: "assigneeId",
+                                as: "assignmentList",
+                            },
+                        },
+                    ]);
                     if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
 
                     return data;
                 } catch (error) {
                     logger.error("[ERROR] assignee.detailByUserId => ", JSON.stringify(error, null, 2));
-
-                    throw new MoleculerServerError(error.message, error.code, error.type);
-                }
-            },
-        },
-        updateByUserId: {
-            params: {
-                userId: {
-                    type: "number",
-                    empty: false,
-                },
-                name: {
-                    type: "string",
-                },
-                email: {
-                    type: "email",
-                },
-            },
-            async handler(ctx) {
-                logger.info("[ACTION] assignee.updateByUserId is called.");
-
-                const { userId, name, email } = ctx.params;
-
-                try {
-                    const data = await models.Assignee.findOneAndUpdate({ userId }, { name, email });
-                    if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
-
-                    return;
-                } catch (error) {
-                    logger.error("[ERROR] assignee.updateByUserId => ", JSON.stringify(error, null, 2));
-
-                    throw new MoleculerServerError(error.message, error.code, error.type);
-                }
-            },
-        },
-        deleteByUserId: {
-            params: {
-                userId: {
-                    type: "number",
-                    empty: false,
-                },
-            },
-            async handler(ctx) {
-                logger.info("[ACTION] assignee.deleteByUserId is called.");
-
-                const { userId } = ctx.params;
-
-                try {
-                    const data = await models.Assignee.findOneAndDelete({ userId });
-                    if (!data) throw new MoleculerClientError("Not Found!", 404, "NOT_FOUND");
-
-                    return;
-                } catch (error) {
-                    logger.error("[ERROR] assignee.deleteByUserId => ", JSON.stringify(error, null, 2));
 
                     throw new MoleculerServerError(error.message, error.code, error.type);
                 }
